@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elevated Frames | Drone Photography & Video</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .hero-bg {
+      background-image: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.75)), url('images/fall-shadow-river.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      height: 92vh;
+    }
+    .masonry {
+      column-count: 1;
+      column-gap: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .masonry { column-count: 3; }
+    }
+    .masonry img {
+      break-inside: avoid;
+      margin-bottom: 1.5rem;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px -5px rgb(0 0 0 / 0.5);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .masonry img:hover {
+      transform: scale(1.03);
+    }
+
+    /* Stronger Navigation */
+    .nav-link {
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .nav-link:hover {
+      color: white;
+    }
+    .nav-link:after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: white;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover:after {
+      width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 font-sans">
+
+  <!-- Improved Navigation -->
+  <nav class="fixed top-0 left-0 right-0 bg-black/95 backdrop-blur-md z-50 border-b border-zinc-800">
+    <div class="max-w-6xl mx-auto px-6 py-6 flex justify-between items-center">
+      <img src="images/logo.png" alt="Elevated Frames Logo" class="h-14 w-auto">
+      <div class="flex gap-10 text-base font-semibold">
+        <a href="#services" class="nav-link text-zinc-300 hover:text-white">Services</a>
+        <a href="#work" class="nav-link text-zinc-300 hover:text-white">Work</a>
+        <a href="#about" class="nav-link text-zinc-300 hover:text-white">About</a>
+        <a href="#contact" class="nav-link text-zinc-300 hover:text-white">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero (unchanged) -->
+  <section id="hero" class="hero-bg flex items-center justify-center text-center relative">
+    <div class="max-w-5xl mx-auto px-6">
+      <img src="images/logo.png" alt="Elevated Frames" class="mx-auto h-44 mb-10 drop-shadow-2xl">
+      <h1 class="text-6xl md:text-7xl font-bold tracking-tighter mb-6">Elevated Frames</h1>
+      <p class="text-2xl md:text-3xl text-zinc-200 mb-12">Professional Drone Photography & Cinematic Video</p>
+      <a href="#work" class="inline-block bg-white text-black px-12 py-5 rounded-full text-lg font-semibold hover:bg-zinc-100 transition">Explore Our Work</a>
+    </div>
+
+    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center">
+      <span class="text-xs tracking-widest text-zinc-400 mb-2">SCROLL TO EXPLORE</span>
+      <div class="w-px h-12 bg-gradient-to-b from-transparent via-zinc-400 to-transparent"></div>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section id="services" class="py-24 bg-zinc-900">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-16">Services</h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="bg-zinc-800 p-10 rounded-3xl">
+          <h3 class="text-2xl font-semibold mb-4">Aerial Photography</h3>
+          <p class="text-zinc-400">High-resolution drone photos for real estate, properties, and landscapes.</p>
+        </div>
+        <div class="bg-zinc-800 p-10 rounded-3xl">
+          <h3 class="text-2xl font-semibold mb-4">Cinematic Drone Video</h3>
+          <p class="text-zinc-400">Smooth, professional video footage with dynamic movement.</p>
+        </div>
+        <div class="bg-zinc-800 p-10 rounded-3xl">
+          <h3 class="text-2xl font-semibold mb-4">Events & Special Shoots</h3>
+          <p class="text-zinc-400">Unique aerial perspectives for weddings, events, and more.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Portfolio -->
+  <section id="work" class="py-24 bg-black">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-16">Our Work</h2>
+      <div class="masonry" id="gallery">
+        <img src="images/lake-a-bays.jpg" alt="" onclick="openLightbox(0)">
+        <img src="images/lake-simcoe.jpg" alt="" onclick="openLightbox(1)">
+        <img src="images/metal-roofing.jpg" alt="" onclick="openLightbox(2)">
+        <img src="images/rosseau-wedding.jpg" alt="" onclick="openLightbox(3)">
+        <img src="images/lake-rosseau.jpg" alt="" onclick="openLightbox(4)">
+        <img src="images/lake-rosseau-proposal.jpg" alt="" onclick="openLightbox(5)">
+        <img src="images/parry-sound-marina.jpg" alt="" onclick="openLightbox(6)">
+        <img src="images/garage-complete.jpg" alt="" onclick="openLightbox(7)">
+        <img src="images/garage-framing.jpg" alt="" onclick="openLightbox(8)">
+        <img src="images/garage-icf.jpg" alt="" onclick="openLightbox(9)">
+        <img src="images/garage-trusses.jpg" alt="" onclick="openLightbox(10)">
+        <img src="images/fall-shadow-river.jpg" alt="" onclick="openLightbox(11)">
+        <img src="images/fitness-trail-summer.jpg" alt="" onclick="openLightbox(12)">
+        <img src="images/forest-top-down.jpg" alt="" onclick="openLightbox(13)">
+        <img src="images/hj-fitness-trail.jpg" alt="" onclick="openLightbox(14)">
+        <img src="images/shadow-river-construction.jpg" alt="" onclick="openLightbox(15)">
+        <img src="images/shadow-river-construction2.jpg" alt="" onclick="openLightbox(16)">
+        <img src="images/black-rosseau-cottage1.jpg" alt="" onclick="openLightbox(17)">
+        <img src="images/blast-site.jpg" alt="" onclick="openLightbox(18)">
+        <img src="images/wilno-fall.jpg" alt="" onclick="openLightbox(19)">
+        <img src="images/wake-surfing.jpg" alt="" onclick="openLightbox(20)">
+        <img src="images/fall-pond.jpg" alt="" onclick="openLightbox(21)">
+        <img src="images/lighthouse-winter.jpg" alt="" onclick="openLightbox(22)">
+        <img src="images/parry-sound-run.jpg" alt="" onclick="openLightbox(23)">
+        <img src="images/pratts-point-rosseau.jpg" alt="" onclick="openLightbox(24)">
+        <img src="images/pratts-point-top-down.jpg" alt="" onclick="openLightbox(25)">
+        <img src="images/rosseau-town-fall.jpg" alt="" onclick="openLightbox(26)">
+        <img src="images/rosseau-town-winter.jpg" alt="" onclick="openLightbox(27)">
+        <img src="images/snowmobiling-quebec.jpg" alt="" onclick="openLightbox(28)">
+        <img src="images/snowmobiling.jpg" alt="" onclick="openLightbox(29)">
+        <img src="images/trestle-bridge-parry-sound.jpg" alt="" onclick="openLightbox(30)">
+        <img src="images/water-skiing.jpg" alt="" onclick="openLightbox(31)">
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="if(event.target === this) closeLightbox()">
+    <span id="close" class="lightbox-btn" onclick="closeLightbox()">×</span>
+    <span id="prev" class="lightbox-btn" onclick="prevImage()">‹</span>
+    <img id="lightbox-image" src="" alt="">
+    <span id="next" class="lightbox-btn" onclick="nextImage()">›</span>
+  </div>
+
+  <!-- About -->
+  <section id="about" class="py-24 bg-zinc-900">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <h2 class="text-4xl font-bold mb-8">About Elevated Frames</h2>
+      <p class="text-lg text-zinc-400 leading-relaxed">
+        Based in Parry Sound, Ontario, Elevated Frames captures the world from above with professional drone photography and cinematic video.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="py-24 bg-black">
+    <div class="max-w-2xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-12">Let's Create Something Elevated</h2>
+      <form action="https://formspree.io/f/mykbwgev" method="POST" class="space-y-6">
+        <input type="text" name="name" placeholder="Your Name" required class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-6 py-4">
+        <input type="email" name="email" placeholder="Your Email" required class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-6 py-4">
+        <textarea name="message" rows="6" placeholder="Tell me about your project..." required class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-6 py-4"></textarea>
+        <button type="submit" class="w-full bg-white text-black py-5 rounded-2xl font-semibold text-lg hover:bg-zinc-200">Send Message</button>
+      </form>
+      <div class="text-center mt-10 text-zinc-400">
+        <p>jordan@elevatedframes.media</p>
+        <p class="mt-2">Parry Sound, Ontario</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-zinc-950 py-12 text-center text-zinc-500 text-sm">
+    © 2026 Elevated Frames • Professional Drone Photography & Video • Parry Sound, Ontario
+  </footer>
+
+  <script>
+    let currentIndex = 0;
+    const images = [
+      "images/lake-a-bays.jpg", "images/lake-simcoe.jpg", "images/metal-roofing.jpg",
+      "images/rosseau-wedding.jpg", "images/lake-rosseau.jpg", "images/lake-rosseau-proposal.jpg",
+      "images/parry-sound-marina.jpg", "images/garage-complete.jpg", "images/garage-framing.jpg",
+      "images/garage-icf.jpg", "images/garage-trusses.jpg", "images/fall-shadow-river.jpg",
+      "images/fitness-trail-summer.jpg", "images/forest-top-down.jpg", "images/hj-fitness-trail.jpg",
+      "images/shadow-river-construction.jpg", "images/shadow-river-construction2.jpg",
+      "images/black-rosseau-cottage1.jpg", "images/blast-site.jpg", "images/wilno-fall.jpg",
+      "images/wake-surfing.jpg", "images/fall-pond.jpg", "images/lighthouse-winter.jpg",
+      "images/parry-sound-run.jpg", "images/pratts-point-rosseau.jpg", "images/pratts-point-top-down.jpg",
+      "images/rosseau-town-fall.jpg", "images/rosseau-town-winter.jpg", "images/snowmobiling-quebec.jpg",
+      "images/snowmobiling.jpg", "images/trestle-bridge-parry-sound.jpg", "images/water-skiing.jpg"
+    ];
+
+    function openLightbox(index) {
+      currentIndex = index;
+      document.getElementById('lightbox-image').src = images[currentIndex];
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+    }
+
+    function prevImage() {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      document.getElementById('lightbox-image').src = images[currentIndex];
+    }
+
+    function nextImage() {
+      currentIndex = (currentIndex + 1) % images.length;
+      document.getElementById('lightbox-image').src = images[currentIndex];
+    }
+
+    document.addEventListener('keydown', function(e) {
+      const lb = document.getElementById('lightbox');
+      if (!lb.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') prevImage();
+      if (e.key === 'ArrowRight') nextImage();
+    });
+  </script>
+
+</body>
+</html>
