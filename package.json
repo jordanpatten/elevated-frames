@@ -1,0 +1,15 @@
+{
+  "name": "evote-app",
+  "version": "1.0.0",
+  "description": "Working group polls app with Excel export",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "exceljs": "^4.4.0",
+    "uuid": "^9.0.0"
+  }
+}

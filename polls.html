@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evote — Working Group Polls</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .progress-bar { transition: width 0.5s ease; }
+    .fade-in { animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .radio-option input[type="radio"]:checked + label {
+      background-color: rgb(39 39 42);
+      border-color: rgb(161 161 170);
+    }
+    .radio-option input[type="radio"] { display: none; }
+    .radio-option label { cursor: pointer; }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-200 min-h-screen">
+
+  <!-- Nav -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-md border-b border-zinc-800">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+      <button onclick="showView('list')" class="text-lg font-bold tracking-tight text-zinc-100 hover:text-white transition-colors">
+        Evote
+      </button>
+      <span class="text-xs text-zinc-500 tracking-widest uppercase">Working Group Polls</span>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="max-w-4xl mx-auto px-6 pt-28 pb-16">
+
+    <!-- ── View: Poll List ─────────────────────────────────────────────── -->
+    <div id="view-list" class="fade-in">
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-zinc-100">Polls</h1>
+          <p class="text-zinc-400 mt-1 text-sm">Select a poll to vote, or view results.</p>
+        </div>
+        <button onclick="showView('create')" class="px-5 py-2.5 bg-zinc-100 text-zinc-900 rounded-xl font-semibold text-sm hover:bg-white transition-colors">
+          + New Poll
+        </button>
+      </div>
+
+      <!-- Admin token input (stored in sessionStorage) -->
+      <div class="mb-6 p-4 bg-zinc-900 border border-zinc-700 rounded-2xl flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <label class="text-xs font-semibold text-zinc-400 uppercase tracking-wider whitespace-nowrap">Admin Token</label>
+        <input
+          id="admin-token-input"
+          type="password"
+          placeholder="Enter admin token to create or manage polls…"
+          class="flex-1 bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 w-full"
+          oninput="saveAdminToken(this.value)"
+        />
+      </div>
+
+      <div id="poll-list-container">
+        <div class="text-zinc-500 text-sm">Loading polls…</div>
+      </div>
+    </div>
+
+    <!-- ── View: Create Poll ───────────────────────────────────────────── -->
+    <div id="view-create" class="fade-in hidden">
+      <button onclick="showView('list')" class="flex items-center gap-2 text-zinc-400 hover:text-zinc-200 text-sm mb-6 transition-colors">
+        ← Back to polls
+      </button>
+      <h1 class="text-2xl font-bold text-zinc-100 mb-8">Create a New Poll</h1>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 space-y-6">
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Poll Question *</label>
+          <input id="create-title" type="text" maxlength="255" placeholder="e.g. Which meeting date works best?"
+            class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Description (optional)</label>
+          <textarea id="create-description" rows="3" placeholder="Add context for voters…"
+            class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500 resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Created By *</label>
+          <input id="create-author" type="text" maxlength="100" placeholder="Your name"
+            class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Options (min 2) *</label>
+          <div id="options-container" class="space-y-3">
+            <input type="text" maxlength="200" placeholder="Option 1"
+              class="option-input w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500" />
+            <input type="text" maxlength="200" placeholder="Option 2"
+              class="option-input w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500" />
+          </div>
+          <button onclick="addOption()" class="mt-3 text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
+            + Add option
+          </button>
+        </div>
+
+        <div id="create-error" class="hidden text-red-400 text-sm bg-red-950/40 border border-red-800 rounded-xl px-4 py-3"></div>
+
+        <button onclick="submitCreatePoll()" id="create-btn"
+          class="w-full py-3 bg-zinc-100 text-zinc-900 rounded-xl font-semibold hover:bg-white transition-colors">
+          Create Poll
+        </button>
+      </div>
+    </div>
+
+    <!-- ── View: Vote ─────────────────────────────────────────────────── -->
+    <div id="view-vote" class="fade-in hidden">
+      <button onclick="showView('list')" class="flex items-center gap-2 text-zinc-400 hover:text-zinc-200 text-sm mb-6 transition-colors">
+        ← Back to polls
+      </button>
+
+      <div id="vote-header" class="mb-8">
+        <div id="vote-badge" class="inline-block mb-3"></div>
+        <h1 id="vote-title" class="text-2xl font-bold text-zinc-100"></h1>
+        <p id="vote-description" class="text-zinc-400 mt-2 text-sm"></p>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 space-y-6">
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">Your Name *</label>
+          <input id="vote-name" type="text" maxlength="100" placeholder="Enter your full name to vote"
+            class="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500" />
+          <p class="text-xs text-zinc-500 mt-1">Each name can only vote once per poll.</p>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">Select an Option *</label>
+          <div id="vote-options" class="space-y-3"></div>
+        </div>
+
+        <div id="vote-error" class="hidden text-sm rounded-xl px-4 py-3 border"></div>
+
+        <button onclick="submitVote()" id="vote-btn"
+          class="w-full py-3 bg-zinc-100 text-zinc-900 rounded-xl font-semibold hover:bg-white transition-colors">
+          Submit Vote
+        </button>
+
+        <button onclick="showResults(currentPollId)" class="w-full py-2.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors">
+          View current results →
+        </button>
+      </div>
+    </div>
+
+    <!-- ── View: Results ──────────────────────────────────────────────── -->
+    <div id="view-results" class="fade-in hidden">
+      <button onclick="showView('list')" class="flex items-center gap-2 text-zinc-400 hover:text-zinc-200 text-sm mb-6 transition-colors">
+        ← Back to polls
+      </button>
+
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+        <div>
+          <div id="results-badge" class="inline-block mb-3"></div>
+          <h1 id="results-title" class="text-2xl font-bold text-zinc-100"></h1>
+          <p id="results-description" class="text-zinc-400 mt-2 text-sm"></p>
+          <p id="results-meta" class="text-zinc-500 mt-1 text-xs"></p>
+        </div>
+        <div class="flex gap-3 shrink-0">
+          <button id="results-vote-btn" onclick="showVoteView(currentPollId)"
+            class="px-4 py-2 bg-zinc-800 text-zinc-200 rounded-xl text-sm font-medium hover:bg-zinc-700 transition-colors hidden">
+            Vote
+          </button>
+          <button onclick="exportPoll(currentPollId)"
+            class="px-4 py-2 bg-zinc-100 text-zinc-900 rounded-xl text-sm font-semibold hover:bg-white transition-colors">
+            Export to Excel
+          </button>
+        </div>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 mb-6">
+        <p id="results-total" class="text-sm text-zinc-400 mb-6"></p>
+        <div id="results-bars" class="space-y-5"></div>
+      </div>
+
+      <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8">
+        <h2 class="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Voter Log</h2>
+        <div id="voter-log" class="overflow-x-auto">
+          <p class="text-zinc-500 text-sm">No votes yet.</p>
+        </div>
+      </div>
+
+      <p id="results-refresh-note" class="text-xs text-zinc-600 mt-4 text-center hidden">
+        Results refresh automatically every 10 seconds while the poll is open.
+      </p>
+    </div>
+
+  </main>
+
+  <script>
+    // ── State ─────────────────────────────────────────────────────────────────
+    let currentView = 'list';
+    let currentPollId = null;
+    let refreshInterval = null;
+
+    // ── Admin token ───────────────────────────────────────────────────────────
+    function saveAdminToken(val) {
+      sessionStorage.setItem('adminToken', val);
+    }
+
+    function getAdminToken() {
+      return sessionStorage.getItem('adminToken') || '';
+    }
+
+    function adminHeaders() {
+      const h = { 'Content-Type': 'application/json' };
+      const t = getAdminToken();
+      if (t) h['X-Admin-Token'] = t;
+      return h;
+    }
+
+    // ── View router ───────────────────────────────────────────────────────────
+    function showView(name) {
+      const views = ['list', 'create', 'vote', 'results'];
+      views.forEach(v => {
+        document.getElementById('view-' + v).classList.toggle('hidden', v !== name);
+      });
+      clearRefresh();
+      currentView = name;
+      if (name === 'list') loadPollList();
+    }
+
+    function clearRefresh() {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        refreshInterval = null;
+      }
+    }
+
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    function el(id) { return document.getElementById(id); }
+
+    function setTextSafe(id, text) {
+      el(id).textContent = text;
+    }
+
+    function badge(isOpen) {
+      const span = document.createElement('span');
+      span.textContent = isOpen ? 'Open' : 'Closed';
+      span.className = isOpen
+        ? 'text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800'
+        : 'text-xs font-semibold px-2.5 py-1 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700';
+      return span;
+    }
+
+    function showError(id, msg) {
+      const e = el(id);
+      e.textContent = msg;
+      e.classList.remove('hidden');
+    }
+
+    function hideError(id) {
+      el(id).classList.add('hidden');
+    }
+
+    // ── Poll List ─────────────────────────────────────────────────────────────
+    async function loadPollList() {
+      const container = el('poll-list-container');
+      // Restore saved token
+      const savedToken = getAdminToken();
+      if (savedToken) el('admin-token-input').value = savedToken;
+
+      try {
+        const resp = await fetch('/api/polls');
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Failed to load polls.');
+
+        if (data.polls.length === 0) {
+          container.innerHTML = '';
+          const p = document.createElement('p');
+          p.textContent = 'No polls yet. Create the first one!';
+          p.className = 'text-zinc-500 text-sm py-8 text-center';
+          container.appendChild(p);
+          return;
+        }
+
+        container.innerHTML = '';
+        data.polls.slice().reverse().forEach(poll => {
+          container.appendChild(renderPollCard(poll));
+        });
+      } catch (err) {
+        container.innerHTML = '';
+        const p = document.createElement('p');
+        p.textContent = err.message;
+        p.className = 'text-red-400 text-sm';
+        container.appendChild(p);
+      }
+    }
+
+    function renderPollCard(poll) {
+      const card = document.createElement('div');
+      card.className = 'bg-zinc-900 border border-zinc-800 rounded-3xl p-6 mb-4 flex flex-col sm:flex-row sm:items-center gap-4';
+
+      const info = document.createElement('div');
+      info.className = 'flex-1 min-w-0';
+
+      const titleRow = document.createElement('div');
+      titleRow.className = 'flex items-center gap-3 mb-1 flex-wrap';
+
+      const titleEl = document.createElement('span');
+      titleEl.textContent = poll.title;
+      titleEl.className = 'font-semibold text-zinc-100 text-base';
+
+      titleRow.appendChild(titleEl);
+      titleRow.appendChild(badge(poll.isOpen));
+
+      const meta = document.createElement('p');
+      meta.textContent = `${poll.voteCount} vote${poll.voteCount !== 1 ? 's' : ''} · ${poll.optionCount} options`;
+      if (poll.createdBy) meta.textContent += ` · by ${poll.createdBy}`;
+      meta.className = 'text-zinc-500 text-xs mt-0.5';
+
+      info.appendChild(titleRow);
+      info.appendChild(meta);
+
+      const actions = document.createElement('div');
+      actions.className = 'flex gap-2 flex-wrap shrink-0';
+
+      if (poll.isOpen) {
+        const voteBtn = document.createElement('button');
+        voteBtn.textContent = 'Vote';
+        voteBtn.className = 'px-4 py-2 bg-zinc-100 text-zinc-900 rounded-xl text-sm font-semibold hover:bg-white transition-colors';
+        voteBtn.onclick = () => showVoteView(poll.id);
+        actions.appendChild(voteBtn);
+      }
+
+      const resultsBtn = document.createElement('button');
+      resultsBtn.textContent = 'Results';
+      resultsBtn.className = 'px-4 py-2 bg-zinc-800 text-zinc-200 rounded-xl text-sm font-medium hover:bg-zinc-700 transition-colors';
+      resultsBtn.onclick = () => showResults(poll.id);
+      actions.appendChild(resultsBtn);
+
+      const toggleBtn = document.createElement('button');
+      toggleBtn.textContent = poll.isOpen ? 'Close' : 'Reopen';
+      toggleBtn.className = 'px-3 py-2 bg-zinc-800 text-zinc-400 rounded-xl text-xs font-medium hover:bg-zinc-700 hover:text-zinc-200 transition-colors';
+      toggleBtn.onclick = () => togglePoll(poll.id, poll.isOpen);
+      actions.appendChild(toggleBtn);
+
+      const delBtn = document.createElement('button');
+      delBtn.textContent = 'Delete';
+      delBtn.className = 'px-3 py-2 bg-red-950 text-red-400 rounded-xl text-xs font-medium hover:bg-red-900 transition-colors';
+      delBtn.onclick = () => deletePoll(poll.id, poll.title);
+      actions.appendChild(delBtn);
+
+      card.appendChild(info);
+      card.appendChild(actions);
+      return card;
+    }
+
+    // ── Create Poll ───────────────────────────────────────────────────────────
+    function addOption() {
+      const container = el('options-container');
+      const count = container.querySelectorAll('.option-input').length + 1;
+      if (count > 20) return;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.maxLength = 200;
+      input.placeholder = `Option ${count}`;
+      input.className = 'option-input w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500';
+      container.appendChild(input);
+    }
+
+    async function submitCreatePoll() {
+      hideError('create-error');
+      const title = el('create-title').value.trim();
+      const description = el('create-description').value.trim();
+      const createdBy = el('create-author').value.trim();
+      const optionInputs = document.querySelectorAll('#options-container .option-input');
+      const options = Array.from(optionInputs).map(i => i.value.trim()).filter(Boolean);
+
+      if (!title) return showError('create-error', 'Poll question is required.');
+      if (!createdBy) return showError('create-error', 'Please enter your name.');
+      if (options.length < 2) return showError('create-error', 'Please enter at least 2 options.');
+
+      const btn = el('create-btn');
+      btn.disabled = true;
+      btn.textContent = 'Creating…';
+
+      try {
+        const resp = await fetch('/api/polls', {
+          method: 'POST',
+          headers: adminHeaders(),
+          body: JSON.stringify({ title, description, createdBy, options }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Failed to create poll.');
+
+        // Reset form
+        el('create-title').value = '';
+        el('create-description').value = '';
+        el('create-author').value = '';
+        el('options-container').innerHTML = `
+          <input type="text" maxlength="200" placeholder="Option 1" class="option-input w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500" />
+          <input type="text" maxlength="200" placeholder="Option 2" class="option-input w-full bg-zinc-800 border border-zinc-700 rounded-xl px-4 py-3 text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-500" />
+        `;
+
+        showView('list');
+      } catch (err) {
+        showError('create-error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Create Poll';
+      }
+    }
+
+    // ── Vote View ─────────────────────────────────────────────────────────────
+    async function showVoteView(pollId) {
+      currentPollId = pollId;
+      showView('vote');
+      hideError('vote-error');
+      el('vote-name').value = '';
+
+      try {
+        const resp = await fetch(`/api/polls/${encodeURIComponent(pollId)}`);
+        const poll = await resp.json();
+        if (!resp.ok) throw new Error(poll.error || 'Failed to load poll.');
+
+        // Badge
+        const badgeContainer = el('vote-badge');
+        badgeContainer.innerHTML = '';
+        badgeContainer.appendChild(badge(poll.isOpen));
+
+        setTextSafe('vote-title', poll.title);
+        setTextSafe('vote-description', poll.description || '');
+
+        if (!poll.isOpen) {
+          el('vote-btn').disabled = true;
+          el('vote-btn').textContent = 'Poll is closed';
+          el('vote-btn').className = 'w-full py-3 bg-zinc-800 text-zinc-500 rounded-xl font-semibold cursor-not-allowed';
+        } else {
+          el('vote-btn').disabled = false;
+          el('vote-btn').textContent = 'Submit Vote';
+          el('vote-btn').className = 'w-full py-3 bg-zinc-100 text-zinc-900 rounded-xl font-semibold hover:bg-white transition-colors';
+        }
+
+        // Render radio options
+        const optContainer = el('vote-options');
+        optContainer.innerHTML = '';
+        poll.options.forEach(opt => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'radio-option';
+
+          const radio = document.createElement('input');
+          radio.type = 'radio';
+          radio.name = 'vote-option';
+          radio.id = `opt-${opt.id}`;
+          radio.value = opt.id;
+
+          const label = document.createElement('label');
+          label.htmlFor = `opt-${opt.id}`;
+          label.textContent = opt.text;
+          label.className = 'block w-full px-4 py-3 rounded-xl border border-zinc-700 bg-zinc-800 hover:border-zinc-500 transition-colors text-zinc-100 text-sm';
+
+          wrapper.appendChild(radio);
+          wrapper.appendChild(label);
+          optContainer.appendChild(wrapper);
+        });
+      } catch (err) {
+        showError('vote-error', err.message);
+        el('vote-error').className = 'text-red-400 text-sm bg-red-950/40 border border-red-800 rounded-xl px-4 py-3';
+      }
+    }
+
+    async function submitVote() {
+      hideError('vote-error');
+      const voterName = el('vote-name').value.trim();
+      const selected = document.querySelector('input[name="vote-option"]:checked');
+
+      if (!voterName) {
+        el('vote-error').className = 'text-red-400 text-sm bg-red-950/40 border border-red-800 rounded-xl px-4 py-3';
+        return showError('vote-error', 'Please enter your name before voting.');
+      }
+      if (!selected) {
+        el('vote-error').className = 'text-red-400 text-sm bg-red-950/40 border border-red-800 rounded-xl px-4 py-3';
+        return showError('vote-error', 'Please select an option.');
+      }
+
+      const btn = el('vote-btn');
+      btn.disabled = true;
+      btn.textContent = 'Submitting…';
+
+      try {
+        const resp = await fetch(`/api/polls/${encodeURIComponent(currentPollId)}/votes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voterName, optionId: selected.value }),
+        });
+        const data = await resp.json();
+
+        if (resp.status === 409) {
+          // Duplicate vote — show informative message
+          el('vote-error').className = 'text-amber-400 text-sm bg-amber-950/40 border border-amber-800 rounded-xl px-4 py-3';
+          let msg = data.error;
+          if (data.existingVote) {
+            msg += ` You voted for "${data.existingVote.optionText}" on ${new Date(data.existingVote.votedAt).toLocaleString()}.`;
+          }
+          showError('vote-error', msg);
+          btn.disabled = false;
+          btn.textContent = 'Submit Vote';
+          return;
+        }
+
+        if (!resp.ok) throw new Error(data.error || 'Failed to submit vote.');
+
+        // Success — go to results
+        showResults(currentPollId);
+      } catch (err) {
+        el('vote-error').className = 'text-red-400 text-sm bg-red-950/40 border border-red-800 rounded-xl px-4 py-3';
+        showError('vote-error', err.message);
+        btn.disabled = false;
+        btn.textContent = 'Submit Vote';
+      }
+    }
+
+    // ── Results ───────────────────────────────────────────────────────────────
+    async function showResults(pollId) {
+      currentPollId = pollId;
+      showView('results');
+      await loadResults(pollId);
+
+      // Auto-refresh every 10s while poll is open
+      clearRefresh();
+    }
+
+    async function loadResults(pollId) {
+      try {
+        const resp = await fetch(`/api/polls/${encodeURIComponent(pollId)}/results`);
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Failed to load results.');
+
+        const { poll, totalVotes, options, voters } = data;
+
+        const badgeContainer = el('results-badge');
+        badgeContainer.innerHTML = '';
+        badgeContainer.appendChild(badge(poll.isOpen));
+
+        setTextSafe('results-title', poll.title);
+        setTextSafe('results-description', poll.description || '');
+
+        const voteBtn = el('results-vote-btn');
+        if (poll.isOpen) {
+          voteBtn.classList.remove('hidden');
+        } else {
+          voteBtn.classList.add('hidden');
+        }
+
+        // Auto-refresh note
+        const refreshNote = el('results-refresh-note');
+        if (poll.isOpen) {
+          refreshNote.classList.remove('hidden');
+          if (!refreshInterval) {
+            refreshInterval = setInterval(() => loadResults(pollId), 10000);
+          }
+        } else {
+          refreshNote.classList.add('hidden');
+          clearRefresh();
+        }
+
+        // Total
+        const totalEl = el('results-total');
+        totalEl.textContent = `${totalVotes} vote${totalVotes !== 1 ? 's' : ''} total`;
+
+        // Bars
+        const barsContainer = el('results-bars');
+        barsContainer.innerHTML = '';
+        options.forEach((opt, i) => {
+          const row = document.createElement('div');
+
+          const topRow = document.createElement('div');
+          topRow.className = 'flex items-center justify-between mb-1.5';
+
+          const optText = document.createElement('span');
+          optText.textContent = opt.text;
+          optText.className = 'text-sm text-zinc-100 font-medium';
+
+          const countEl = document.createElement('span');
+          countEl.textContent = `${opt.votes} vote${opt.votes !== 1 ? 's' : ''} (${opt.percentage}%)`;
+          countEl.className = 'text-xs text-zinc-400 font-mono';
+
+          topRow.appendChild(optText);
+          topRow.appendChild(countEl);
+
+          const track = document.createElement('div');
+          track.className = 'h-3 bg-zinc-800 rounded-full overflow-hidden';
+
+          const fill = document.createElement('div');
+          fill.className = 'progress-bar h-3 rounded-full bg-zinc-300';
+          fill.style.width = `${opt.percentage}%`;
+
+          track.appendChild(fill);
+          row.appendChild(topRow);
+          row.appendChild(track);
+          barsContainer.appendChild(row);
+        });
+
+        // Voter log
+        const logContainer = el('voter-log');
+        logContainer.innerHTML = '';
+        if (voters.length === 0) {
+          const p = document.createElement('p');
+          p.textContent = 'No votes yet.';
+          p.className = 'text-zinc-500 text-sm';
+          logContainer.appendChild(p);
+        } else {
+          const table = document.createElement('table');
+          table.className = 'w-full text-sm min-w-[480px]';
+
+          const thead = document.createElement('thead');
+          const headerRow = document.createElement('tr');
+          ['Voter', 'Voted For', 'Time'].forEach(h => {
+            const th = document.createElement('th');
+            th.textContent = h;
+            th.className = 'text-left text-xs text-zinc-500 uppercase tracking-wider pb-3 pr-6 font-semibold';
+            headerRow.appendChild(th);
+          });
+          thead.appendChild(headerRow);
+          table.appendChild(thead);
+
+          const tbody = document.createElement('tbody');
+          voters.forEach(v => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-t border-zinc-800';
+
+            const tdName = document.createElement('td');
+            tdName.textContent = v.voterName;
+            tdName.className = 'py-3 pr-6 text-zinc-200 font-medium';
+
+            const tdOpt = document.createElement('td');
+            tdOpt.textContent = v.optionText;
+            tdOpt.className = 'py-3 pr-6 text-zinc-300';
+
+            const tdTime = document.createElement('td');
+            tdTime.textContent = new Date(v.votedAt).toLocaleString();
+            tdTime.className = 'py-3 text-zinc-500 font-mono text-xs';
+
+            tr.appendChild(tdName);
+            tr.appendChild(tdOpt);
+            tr.appendChild(tdTime);
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+          logContainer.appendChild(table);
+        }
+      } catch (err) {
+        el('results-total').textContent = `Error: ${err.message}`;
+      }
+    }
+
+    // ── Admin actions ─────────────────────────────────────────────────────────
+    async function deletePoll(pollId, title) {
+      if (!confirm(`Delete poll "${title}"? This cannot be undone.`)) return;
+      try {
+        const resp = await fetch(`/api/polls/${encodeURIComponent(pollId)}`, {
+          method: 'DELETE',
+          headers: adminHeaders(),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Failed to delete poll.');
+        loadPollList();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    async function togglePoll(pollId, currentlyOpen) {
+      try {
+        const resp = await fetch(`/api/polls/${encodeURIComponent(pollId)}`, {
+          method: 'PATCH',
+          headers: adminHeaders(),
+          body: JSON.stringify({ isOpen: !currentlyOpen }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || 'Failed to update poll.');
+        loadPollList();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    function exportPoll(pollId) {
+      window.location.href = `/api/polls/${encodeURIComponent(pollId)}/export`;
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    loadPollList();
+  </script>
+</body>
+</html>
