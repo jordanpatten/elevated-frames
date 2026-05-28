@@ -6,12 +6,53 @@
   <title>Elevated Frames | Drone Photography & Video | Parry Sound, Ontario</title>
   <meta name="description" content="Professional drone photography and cinematic video based in Parry Sound, Ontario. Specializing in real estate, construction documentation, events, and cottage country landscapes.">
 
+  <link rel="canonical" href="https://elevatedframes.media/">
+  <link rel="icon" type="image/png" href="images/logo.png">
+
   <!-- Open Graph / Social -->
   <meta property="og:title" content="Elevated Frames | Drone Photography & Video">
   <meta property="og:description" content="Professional drone photography for real estate, construction, events and beautiful cottage country landscapes in Parry Sound and Muskoka area.">
-  <meta property="og:image" content="images/fall-shadow-river.jpg">
+  <meta property="og:image" content="https://elevatedframes.media/images/fall-shadow-river.jpg">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://elevatedframes.media">
+  <meta property="og:url" content="https://elevatedframes.media/">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Elevated Frames | Drone Photography & Video">
+  <meta name="twitter:description" content="Professional drone photography for real estate, construction, events and beautiful cottage country landscapes in Parry Sound and Muskoka area.">
+  <meta name="twitter:image" content="https://elevatedframes.media/images/fall-shadow-river.jpg">
+
+  <!-- Structured Data: Local Business -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "name": "Elevated Frames",
+    "description": "Professional drone photography and cinematic video based in Parry Sound, Ontario. Specializing in real estate, construction documentation, events, and cottage country landscapes.",
+    "image": "https://elevatedframes.media/images/fall-shadow-river.jpg",
+    "url": "https://elevatedframes.media/",
+    "email": "jordan@elevatedframes.media",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Parry Sound",
+      "addressRegion": "ON",
+      "addressCountry": "CA"
+    },
+    "areaServed": [
+      { "@type": "Place", "name": "Parry Sound" },
+      { "@type": "Place", "name": "Muskoka" },
+      { "@type": "Place", "name": "Cottage Country, Ontario" }
+    ],
+    "serviceType": [
+      "Aerial Photography",
+      "Cinematic Drone Video",
+      "Real Estate Photography",
+      "Construction Documentation",
+      "Event Photography"
+    ]
+  }
+  </script>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -21,6 +62,10 @@
       background-position: center;
       background-attachment: fixed;
       height: 92vh;
+    }
+    /* Avoid scroll jank/repaint from fixed attachment on touch devices */
+    @media (max-width: 768px) {
+      .hero-bg { background-attachment: scroll; }
     }
     .masonry {
       column-count: 2;
@@ -94,14 +139,23 @@
     }
     .lightbox-btn {
       position: absolute;
+      background: transparent;
+      border: none;
+      padding: 0;
       color: #fff;
       font-size: 42px;
       font-weight: 300;
       cursor: pointer;
       user-select: none;
       opacity: 0.65;
-      transition: all 0.2s ease;
+      transition: opacity 0.2s ease;
       line-height: 1;
+    }
+    .lightbox-btn:focus-visible {
+      opacity: 1;
+      outline: 2px solid #fff;
+      outline-offset: 4px;
+      border-radius: 4px;
     }
     .lightbox-btn:hover {
       opacity: 1;
@@ -168,7 +222,7 @@
       </div>
 
       <!-- Mobile Hamburger -->
-      <button id="mobile-menu-btn" class="md:hidden text-zinc-300 hover:text-white p-2 -mr-2" aria-label="Open menu">
+      <button id="mobile-menu-btn" class="md:hidden text-zinc-300 hover:text-white p-2 -mr-2" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
@@ -238,7 +292,7 @@
         <div class="bg-zinc-800 rounded-3xl p-8 text-center">
           <div class="text-3xl font-bold text-white mb-3">02</div>
           <h4 class="font-semibold text-lg mb-2">Confirm details</h4>
-          <p class="text-zinc-400 text-sm">We lock in the date, location, and scope. Simple flat pricing â€” no surprises.</p>
+          <p class="text-zinc-400 text-sm">We lock in the date, location, and scope. Simple flat pricing — no surprises.</p>
         </div>
         <div class="bg-zinc-800 rounded-3xl p-8 text-center">
           <div class="text-3xl font-bold text-white mb-3">03</div>
@@ -365,7 +419,7 @@
         <img src="images/garage-complete.jpg" data-category="construction" alt="Completed garage structure" loading="lazy" onclick="openLightbox(this)">
         <img src="images/garage-framing.jpg" data-category="construction" alt="Wood framing work on a new garage" loading="lazy" onclick="openLightbox(this)">
         <img src="images/garage-icf.jpg" data-category="construction" alt="ICF foundation walls during construction" loading="lazy" onclick="openLightbox(this)">
-        <img src="images/garage-truses.jpg" data-category="construction" alt="Roof trusses being installed on garage" loading="lazy" onclick="openLightbox(this)">
+        <img src="images/garage-trusses.jpg" data-category="construction" alt="Roof trusses being installed on garage" loading="lazy" onclick="openLightbox(this)">
         <img src="images/shadow-river-construction.jpg" data-category="construction" alt="Construction progress on Shadow River project" loading="lazy" onclick="openLightbox(this)">
         <img src="images/shadow-river-construction2.jpg" data-category="construction" alt="Elevated view of active construction site" loading="lazy" onclick="openLightbox(this)">
         <img src="images/blast-site.jpg" data-category="construction" alt="Drone documentation of a controlled blast site" loading="lazy" onclick="openLightbox(this)">
@@ -392,11 +446,11 @@
   </section>
 
   <!-- Lightbox -->
-  <div id="lightbox" onclick="if(event.target === this) closeLightbox()">
-    <span id="close" class="lightbox-btn" onclick="closeLightbox()">&times;</span>
-    <span id="prev" class="lightbox-btn" onclick="prevImage()">&lsaquo;</span>
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" onclick="if(event.target === this) closeLightbox()">
+    <button type="button" id="close" class="lightbox-btn" aria-label="Close image viewer" onclick="closeLightbox()">&times;</button>
+    <button type="button" id="prev" class="lightbox-btn" aria-label="Previous image" onclick="prevImage()">&lsaquo;</button>
     <img id="lightbox-image" src="" alt="">
-    <span id="next" class="lightbox-btn" onclick="nextImage()">&rsaquo;</span>
+    <button type="button" id="next" class="lightbox-btn" aria-label="Next image" onclick="nextImage()">&rsaquo;</button>
   </div>
 
   <!-- About -->
@@ -404,7 +458,7 @@
     <div class="max-w-2xl mx-auto px-6 text-center">
       <h2 class="text-4xl font-bold mb-6">About Elevated Frames</h2>
       <p class="text-lg text-zinc-300 leading-relaxed">
-        I'm Jordan, and Elevated Frames is my passion project based in Parry Sound, Ontario. I fly drones to capture beautiful, high-quality photos and video of the places we love â€” cottages, construction projects, weddings, and the wild landscapes of cottage country.
+        I'm Jordan, and Elevated Frames is my passion project based in Parry Sound, Ontario. I fly drones to capture beautiful, high-quality photos and video of the places we love — cottages, construction projects, weddings, and the wild landscapes of cottage country.
       </p>
       <p class="text-zinc-400 mt-4">
         Whether you're selling a property, documenting a build, or celebrating something special, I deliver clean, elevated perspectives without the fuss.
@@ -419,6 +473,8 @@
       <p class="text-center text-zinc-400 mb-10">Tell me about your project and I'll get back to you within a day or two.</p>
 
       <form action="https://formspree.io/f/mykbwgev" method="POST" class="space-y-6">
+        <!-- Honeypot: hidden from real users, catches spam bots -->
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
         <input type="text" name="name" placeholder="Your Name" required class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-6 py-4">
         <input type="email" name="email" placeholder="Your Email" required class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-6 py-4">
         <textarea name="message" rows="6" placeholder="Tell me about your project, location, and preferred date..." required class="w-full bg-zinc-900 border border-zinc-700 rounded-2xl px-6 py-4"></textarea>
@@ -439,11 +495,24 @@
   <script>
     let currentFiltered = [];
     let currentIndex = 0;
+    let lightboxTrigger = null;
 
     // Initialize filtered list (all images by default)
     function initGallery() {
       const gallery = document.getElementById('gallery');
       currentFiltered = Array.from(gallery.querySelectorAll('img'));
+
+      // Make thumbnails keyboard-operable (Enter / Space opens the lightbox)
+      currentFiltered.forEach(img => {
+        img.setAttribute('tabindex', '0');
+        img.setAttribute('role', 'button');
+        img.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openLightbox(img);
+          }
+        });
+      });
     }
 
     // Filter the gallery
@@ -484,10 +553,19 @@
       lightboxImg.src = imgElement.src;
       lightboxImg.alt = imgElement.alt || '';
       document.getElementById('lightbox').classList.add('active');
+
+      // Remember what to return focus to, then move focus into the dialog
+      lightboxTrigger = imgElement;
+      document.getElementById('close').focus();
     }
 
     function closeLightbox() {
       document.getElementById('lightbox').classList.remove('active');
+      // Restore focus to the image that opened the lightbox
+      if (lightboxTrigger) {
+        lightboxTrigger.focus();
+        lightboxTrigger = null;
+      }
     }
 
     function prevImage() {
@@ -524,6 +602,27 @@
       if (e.key === 'Escape') closeLightbox();
       if (e.key === 'ArrowLeft') prevImage();
       if (e.key === 'ArrowRight') nextImage();
+
+      // Trap focus within the lightbox controls while it's open
+      if (e.key === 'Tab') {
+        const focusable = [
+          document.getElementById('prev'),
+          document.getElementById('next'),
+          document.getElementById('close')
+        ];
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        } else if (!focusable.includes(document.activeElement)) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     });
 
     // Mobile menu toggle
@@ -533,23 +632,31 @@
 
       if (!btn || !menu) return;
 
+      const ICON_OPEN = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>`;
+      const ICON_CLOSE = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+
+      function closeMenu() {
+        menu.classList.add('hidden');
+        btn.innerHTML = ICON_OPEN;
+        btn.setAttribute('aria-expanded', 'false');
+        btn.setAttribute('aria-label', 'Open menu');
+      }
+
       btn.addEventListener('click', () => {
         const isHidden = menu.classList.contains('hidden');
         if (isHidden) {
           menu.classList.remove('hidden');
-          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>`;
+          btn.innerHTML = ICON_CLOSE;
+          btn.setAttribute('aria-expanded', 'true');
+          btn.setAttribute('aria-label', 'Close menu');
         } else {
-          menu.classList.add('hidden');
-          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>`;
+          closeMenu();
         }
       });
 
       // Close menu when clicking a link
       menu.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-          menu.classList.add('hidden');
-          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>`;
-        });
+        link.addEventListener('click', closeMenu);
       });
     }
 
