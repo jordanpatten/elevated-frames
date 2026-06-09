@@ -218,6 +218,7 @@
         <a href="#services" class="nav-link text-zinc-300 hover:text-white">Services</a>
         <a href="#pricing" class="nav-link text-zinc-300 hover:text-white">Pricing</a>
         <a href="#work" class="nav-link text-zinc-300 hover:text-white">Work</a>
+        <a href="#videos" class="nav-link text-zinc-300 hover:text-white">Videos</a>
         <a href="#contact" class="nav-link text-zinc-300 hover:text-white">Contact</a>
       </div>
 
@@ -235,6 +236,7 @@
         <a href="#services" class="mobile-link text-zinc-300 hover:text-white py-1">Services</a>
         <a href="#pricing" class="mobile-link text-zinc-300 hover:text-white py-1">Pricing</a>
         <a href="#work" class="mobile-link text-zinc-300 hover:text-white py-1">Work</a>
+        <a href="#videos" class="mobile-link text-zinc-300 hover:text-white py-1">Videos</a>
         <a href="#contact" class="mobile-link text-zinc-300 hover:text-white py-1">Contact</a>
       </div>
     </div>
@@ -441,6 +443,45 @@
         <img src="images/parry-sound-run.jpg" data-category="landscapes" alt="Coastal trail run along Georgian Bay" loading="lazy" onclick="openLightbox(this)">
         <img src="images/wilno-fall.jpg" data-category="landscapes" alt="Brilliant fall colors in the Wilno hills" loading="lazy" onclick="openLightbox(this)">
         <img src="images/landscapes-001.jpg" data-category="landscapes" alt="Lighthouse" loading="lazy" onclick="openLightbox(this)">
+      </div>
+    </div>
+  </section>
+
+  <!-- Videos -->
+  <section id="videos" class="py-24 bg-zinc-950">
+    <div class="max-w-6xl mx-auto px-6">
+      <h2 class="text-4xl font-bold text-center mb-3">Videos</h2>
+      <p class="text-center text-zinc-400 mb-12 max-w-md mx-auto">Cinematic drone footage from cottage country. New films added as they're released.</p>
+
+      <!--
+        HOW TO ADD A VIDEO
+        ------------------
+        1. Upload your video to YouTube.
+        2. Grab the video ID from its URL — e.g. for
+           https://www.youtube.com/watch?v=dQw4w9WgXcQ  the ID is  dQw4w9WgXcQ
+        3. Copy the <div class="video-card"> ... </div> template below, paste it
+           inside #videos-grid, and set data-youtube-id and data-title.
+        4. Delete the "coming soon" placeholder block once your first video is live.
+
+        TEMPLATE (copy this):
+        <div class="video-card group relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 aspect-video cursor-pointer shadow-xl"
+             data-youtube-id="YOUR_VIDEO_ID"
+             data-title="Your video title"></div>
+      -->
+
+      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto" id="videos-grid">
+
+        <!-- Coming soon placeholder — delete this block once your first video is live -->
+        <div id="video-placeholder" class="md:col-span-2 rounded-2xl bg-zinc-900 border border-zinc-800 aspect-video flex flex-col items-center justify-center text-center px-6">
+          <div class="w-16 h-16 rounded-full bg-zinc-800 flex items-center justify-center mb-5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-zinc-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+          <p class="text-zinc-200 font-semibold text-lg">Our first film is dropping soon</p>
+          <p class="text-zinc-500 text-sm mt-1">Check back this week for cinematic drone footage.</p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -695,6 +736,67 @@
       }
     });
 
+    // Videos: lightweight click-to-play facade (loads YouTube only on click)
+    function setupVideos() {
+      const cards = document.querySelectorAll('.video-card');
+
+      cards.forEach(card => {
+        const id = card.dataset.youtubeId;
+        if (!id) return;
+        const title = card.dataset.title || 'Play video';
+
+        // Use a high-quality thumbnail; fall back if maxres isn't available.
+        const thumb = new Image();
+        thumb.onload = () => {
+          // maxresdefault returns a 120x90 placeholder when missing
+          const src = (thumb.naturalWidth > 120)
+            ? `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`
+            : `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+          card.style.backgroundImage = `url('${src}')`;
+        };
+        thumb.src = `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`;
+
+        card.style.backgroundSize = 'cover';
+        card.style.backgroundPosition = 'center';
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `Play video: ${title}`);
+
+        card.innerHTML = `
+          <div class="absolute inset-0 bg-black/30 group-hover:bg-black/15 transition"></div>
+          <span class="absolute inset-0 flex items-center justify-center">
+            <span class="w-20 h-20 rounded-full bg-black/70 group-hover:bg-red-600 transition flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white ml-1" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </span>
+          </span>
+          <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent pointer-events-none">
+            <p class="text-white font-semibold">${title}</p>
+          </div>`;
+
+        function play() {
+          const iframe = document.createElement('iframe');
+          iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+          iframe.title = title;
+          iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          iframe.allowFullscreen = true;
+          iframe.className = 'absolute inset-0 w-full h-full border-0';
+          card.innerHTML = '';
+          card.classList.remove('cursor-pointer');
+          card.appendChild(iframe);
+        }
+
+        card.addEventListener('click', play, { once: true });
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            play();
+          }
+        });
+      });
+    }
+
     // Mobile menu toggle
     function setupMobileMenu() {
       const btn = document.getElementById('mobile-menu-btn');
@@ -734,6 +836,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       initGallery();
       setupFilters();
+      setupVideos();
       setupMobileMenu();
       // Start with "All" showing everything
       filterGallery('all');
